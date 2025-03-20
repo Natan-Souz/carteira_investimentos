@@ -14,7 +14,7 @@ def carregar_transacoes():
     df = pd.read_sql_query("SELECT * FROM transacoes ORDER BY data DESC", conexao)
     conexao.close()
 
-    df["preco_atual"] = df=["ativo"].apply(lambda x: data_handler.obter_preco_atual(x) if x else None)
+    df["preco_atual"] = df["ativo"].apply(lambda x: data_handler.obter_preco_atual(x) if x else None)
 
     return df
 

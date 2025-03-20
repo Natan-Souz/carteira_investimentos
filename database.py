@@ -21,6 +21,7 @@ def criar_banco():
         tipo TEXT NOT NULL,  -- Compra ou Venda
         quantidade INTEGER NOT NULL,
         preco REAL NOT NULL,
+        preco_atual REAL,
         data TEXT NOT NULL
     )
     ''')

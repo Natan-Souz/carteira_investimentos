@@ -46,6 +46,9 @@ def carregar_transacoes():
 app.layout = html.Div(children=[
     html.H1("Controle de Carteira de Investimentos", style={'textAlign': 'center'}),
 
+    #Painel de metricas
+    html.Div(id="painel-metricas"),
+
     #Formulario de ordens
     html.Div([
         html.Label("Ativo:"),
@@ -120,6 +123,14 @@ def registrar_ordem(n_clicks, ativo, tipo, quantidade, preco, data):
     Output("grafico-rentabilidade", "figure"),
     Input("tabela-transacoes", "data")
 )
+
+@app.callback(
+    Output("painel-metricas", "children"),
+    Input("tabela-transacoes", "data")
+)
+def atualizar_painel(transacoes):
+    return painel()
+
 def atualizar_grafico(transacoes):
     if not transacoes or len(transacoes) == 0:
         return {

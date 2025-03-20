@@ -2,6 +2,7 @@ import dash
 from dash import dcc, html, Input, Output, State, dash_table
 import pandas as pd
 import sqlite3
+import plotly.graph_objects as go
 
 import indicators
 import order_manager
@@ -133,14 +134,13 @@ def atualizar_painel(transacoes):
 
 def atualizar_grafico(transacoes):
     if not transacoes or len(transacoes) == 0:
-        return {
-            "data": [],
-            "layout": {
-                "title": "Carteira vazia! Adicione ordens para visualizar o desempenho.",
-                "xaxis": {"title": "Ativo"},
-                "yaxis": {"title": "Valor (R$)"},
-            }
-        }
+        fig = go.Figure()
+        fig.update_layout(
+            title="Carteira vazia! Adicione ordens para visualizar o desempenho.",
+            xaxis_title="Ativo",
+            yaxis_title="Valor (R$)"
+        )
+        return fig
     
     df = pd.DataFrame(transacoes)
     

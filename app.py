@@ -64,7 +64,7 @@ app.layout = html.Div(children=[
             style_cell={'textAlign': 'center'}
         ),
     ]),
-    
+
     html.Div([
     html.H3("📊 Desempenho da Carteira"),
     dcc.Graph(id="grafico-rentabilidade"),
@@ -89,6 +89,37 @@ def registrar_ordem(n_clicks, ativo, tipo, quantidade, preco, data):
     # Atualiza a tabela
     df = carregar_transacoes()
     return df.to_dict('records')
+
+@app.callback(
+    Output("grafico-rentabilidade", "figure"),
+    Input("tabela-transacoes", "data")
+)
+def atualizar_grafico(transacoes):
+    if not transacoes:
+        return dash.no_update
+    
+    df = pd.DataFrame(transacoes)
+    
+    # Converter para float (evita erro na plotagem)
+    df["preco"] = df["preco"].astype(float)
+    df["preco_atual"] = df["preco_atual"].astype(float)
+    
+    # Calcular valor total por ativo (quantidade * preço)
+    df["valor_investido"] = df["quantidade"] * df["preco"]
+    df["valor_atual"] = df["quantidade"] * df["preco_atual"]
+    
+    # Criar gráfico
+    fig = {
+        "data": [
+            {"x": df["ativo"], "y": df["valor_investido"], "type": "bar", "name": "Valor Investido"},
+            {"x": df["ativo"], "y": df["valor_atual"], "type": "bar", "name": "Valor Atual"},
+        ],
+        "layout": {
+            "title": "Comparação: Investimento vs. Valor Atual"
+        }
+    }
+    
+    return fig
 
 # Executar o app
 if __name__ == '__main__':

@@ -3,11 +3,33 @@ from dash import dcc, html, Input, Output, State, dash_table
 import pandas as pd
 import sqlite3
 
+import indicators
 import order_manager
 import data_handler
 
 #inicializa o app
 app = dash.Dash(__name__)
+
+def painel():
+    metricas = indicators.calcular_metricas()
+    
+    return html.Div([
+        html.Div([
+            html.H4("Saldo Total"),
+            html.H2(f"R$ {metricas['saldo_total']:,}".replace(",", "."), style={'color': 'green'})
+        ], style={'width': '30%', 'display': 'inline-block', 'textAlign': 'center'}),
+
+        html.Div([
+            html.H4("Rentabilidade"),
+            html.H2(f"{metricas['rentabilidade']}%", style={'color': 'blue'})
+        ], style={'width': '30%', 'display': 'inline-block', 'textAlign': 'center'}),
+
+        html.Div([
+            html.H4("Lucro Bruto"),
+            html.H2(f"R$ {metricas['lucro_bruto']:,}".replace(",", "."), 
+                    style={'color': 'green' if metricas['lucro_bruto'] >= 0 else 'red'})
+        ], style={'width': '30%', 'display': 'inline-block', 'textAlign': 'center'}),
+    ], style={'display': 'flex', 'justify-content': 'space-around', 'marginBottom': '20px'})
 
 def carregar_transacoes():
     conexao = sqlite3.connect('carteira.db')

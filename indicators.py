@@ -18,3 +18,17 @@ def calcular_metricas():
     df["preco"] = pd.to_numeric(df["preco"], errors="coerce")
     df["preco_atual"] = pd.to_numeric(df["preco_atual"], errors="coerce")
     df["quantidade"] = pd.to_numeric(df["quantidade"], errors="coerce")
+    
+    #Calcular valores investidos e atuais
+    df["valor_investido"] = df["quantidade"] * df["preco"]
+    df["valor_atual"] = df["quantidade"] * df["preco_atual"]
+
+    saldo_total = df["valor_atual"].sum()
+    lucro_bruto = saldo_total - df["valor_investido"].sum()
+    rentabilidade = (lucro_bruto / df["valor_investido"].sum()) * 100 if df["valor_investido"].sum() > 0 else 0
+
+    return {
+        "saldo_total": round(saldo_total, 2),
+        "lucro_bruto": round(lucro_bruto, 2),
+        "rentabilidade": round(rentabilidade, 2)
+    }

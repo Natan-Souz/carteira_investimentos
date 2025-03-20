@@ -2,8 +2,9 @@ import dash
 from dash import dcc, html, Input, Output, State, dash_table
 import pandas as pd
 import sqlite3
-import order_manager
 
+import order_manager
+import data_handler
 
 #inicializa o app
 app = dash.Dash(__name__)
@@ -12,6 +13,8 @@ def carregar_transacoes():
     conexao = sqlite3.connect('carteira.db')
     df = pd.read_sql_query("SELECT * FROM transacoes ORDER BY data DESC", conexao)
     conexao.close()
+
+    df["preco_atual"] = df=["ativo"].apply(lambda x: data_handler.obter_preco_atual(x) if x else None)
 
     return df
 
@@ -54,6 +57,7 @@ app.layout = html.Div(children=[
                 {"name": "Tipo", "id": "tipo"},
                 {"name": "Quantidade", "id": "quantidade"},
                 {"name": "Preço (R$)", "id": "preco"},
+                {"name": "Preço Atual (R$)", "id": "preco_atual"},
                 {"name": "Data", "id": "data"}
             ],
             style_table={'overflowX': 'auto'},

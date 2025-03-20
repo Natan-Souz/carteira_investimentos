@@ -64,6 +64,11 @@ app.layout = html.Div(children=[
             style_cell={'textAlign': 'center'}
         ),
     ]),
+    
+    html.Div([
+    html.H3("📊 Desempenho da Carteira"),
+    dcc.Graph(id="grafico-rentabilidade"),
+]),
 ])
 
 # Callback para inserir ordens e atualizar a tabela

@@ -14,6 +14,9 @@ def carregar_transacoes():
     df = pd.read_sql_query("SELECT * FROM transacoes ORDER BY data DESC", conexao)
     conexao.close()
 
+    if df.empty:
+        return pd.DataFrame(columns=["id", "ativo", "tipo", "quantidade", "preco", "preco_atual", "data"])
+    
     df["preco_atual"] = df["ativo"].apply(lambda x: data_handler.obter_preco_atual(x) if x else None)
 
     return df
@@ -60,6 +63,7 @@ app.layout = html.Div(children=[
                 {"name": "Preço Atual (R$)", "id": "preco_atual"},
                 {"name": "Data", "id": "data"}
             ],
+            data=carregar_transacoes().to_dict('records'),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'center'}
         ),
@@ -67,8 +71,8 @@ app.layout = html.Div(children=[
 
     html.Div([
     html.H3("📊 Desempenho da Carteira"),
-    dcc.Graph(id="grafico-rentabilidade"),
-]),
+    dcc.Graph(id="grafico-rentabilidade", figure={}),   
+        ]),
 ])
 
 # Callback para inserir ordens e atualizar a tabela
@@ -95,8 +99,15 @@ def registrar_ordem(n_clicks, ativo, tipo, quantidade, preco, data):
     Input("tabela-transacoes", "data")
 )
 def atualizar_grafico(transacoes):
-    if not transacoes:
-        return dash.no_update
+    if not transacoes or len(transacoes) == 0:
+        return {
+            "data": [],
+            "layout": {
+                "title": "Carteira vazia! Adicione ordens para visualizar o desempenho.",
+                "xaxis": {"title": "Ativo"},
+                "yaxis": {"title": "Valor (R$)"},
+            }
+        }
     
     df = pd.DataFrame(transacoes)
     
